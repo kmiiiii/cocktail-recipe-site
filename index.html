@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cocktail Recipe Finder</title>
+</head>
+<body>
+    <h1>カクテルレシピ検索</h1>
+    <label for="base">ベースの酒を選択:</label>
+    <select id="base">
+        <option value="1">ジン</option>
+        <option value="2">ウォッカ</option>
+        <option value="3">テキーラ</option>
+        <option value="4">ラム</option>
+        <option value="5">ウイスキー</option>
+        <option value="6">ブランデー</option>
+        <option value="7">リキュール</option>
+        <option value="8">ワイン</option>
+        <option value="9">ビール</option>
+        <option value="10">日本酒</option>
+        <option value="0">ノンアルコール</option>
+    </select>
+    <button onclick="searchCocktails()">検索</button>
+    <ul id="cocktail-list"></ul>
+
+    <script>
+        const ingredients = [
+            "カンパリ", "アマレット", "ジン", "ボルスブルー", "GET31", "GET27",
+            "マスカットリキュール", "モヒート", "ジムビームアップル", "メロンリキュール",
+            "ドライベルモット", "紅茶リキュール", "コーヒーリキュール", "ホワイトブランデー",
+            "電気ブラン", "モルトウイスキー", "スコッチウイスキー", "テキーラ", "マンゴーリキュール",
+            "ウォッカ", "グリーンティーリキュール", "ブルーベリーリキュール", "ラム", "カシスリキュール",
+            "梅酒", "日本酒", "芋焼酎", "麦焼酎", "泡盛", "赤ワイン", "白ワイン", "ビール", 
+            "生姜のお酒", "はちみつのお酒", "コーラ", "ジンジャエール", "アップルジュース", 
+            "グレープフルーツジュース", "グレープジュース", "オレンジジュース", "牛乳", 
+            "ソーダ", "トニック", "シロップ", "ナッツシロップ", "青リンゴシロップ", "グレナデンシロップ"
+        ];
+
+        async function searchCocktails() {
+            const base = document.getElementById("base").value;
+            const response = await fetch(`https://cocktail-f.com/api/v1/cocktails?base=${base}`);
+            const data = await response.json();
+            const filteredCocktails = filterCocktails(data.cocktails);
+            displayCocktails(filteredCocktails);
+        }
+
+        function filterCocktails(cocktails) {
+            return cocktails.filter(cocktail => 
+                cocktail.recipes.every(recipe => ingredients.includes(recipe.ingredient_name))
+            );
+        }
+
+        function displayCocktails(cocktails) {
+            const list = document.getElementById("cocktail-list");
+            list.innerHTML = "";
+            cocktails.forEach(cocktail => {
+                const listItem = document.createElement("li");
+                listItem.textContent = cocktail.cocktail_name;
+                list.appendChild(listItem);
+            });
+        }
+    </script>
+</body>
+</html>
+
