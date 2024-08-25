@@ -22,13 +22,27 @@
   <script>
     function searchCocktails() {
       var base = document.getElementById('base').value;
-      var url = 'https://script.google.com/macros/s/AKfycbxcgM8_KhKVjWqExUaC0rlhFK_RQ5AYGJplPJjCxVZi4caGXKG5ip3TVioCfS6Y9eVG/exec?base=' + base;
+      var url = 'https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec?base=' + base;
 
       fetch(url)
         .then(response => response.json())
         .then(data => {
-          var results = data.cocktails.map(cocktail => `<div>${cocktail.cocktail_name}: ${cocktail.cocktail_desc}</div>`).join('');
-          document.getElementById('results').innerHTML = results;
+          if (data.cocktails && data.cocktails.length > 0) {
+            var results = data.cocktails.map(cocktail => `
+              <div style="margin-bottom: 20px;">
+                <h2>${cocktail.cocktail_name}</h2>
+                ${cocktail.cocktail_image ? `<img src="${cocktail.cocktail_image}" alt="${cocktail.cocktail_name}" style="max-width: 200px;">` : ''}
+                <p>${cocktail.cocktail_desc}</p>
+                <h3>レシピ:</h3>
+                <ul>
+                  ${cocktail.recipes.map(recipe => `<li>${recipe.ingredient_name}: ${recipe.amount ? recipe.amount + ' ' + recipe.unit : '適量'}</li>`).join('')}
+                </ul>
+              </div>
+            `).join('');
+            document.getElementById('results').innerHTML = results;
+          } else {
+            document.getElementById('results').innerHTML = 'レシピが見つかりませんでした。';
+          }
         })
         .catch(error => {
           document.getElementById('results').innerHTML = 'エラーが発生しました。';
@@ -38,5 +52,3 @@
   </script>
 </body>
 </html>
-
-
